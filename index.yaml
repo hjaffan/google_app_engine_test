@@ -4,3 +4,8 @@ indexes:
   properties:
   - name: date
     direction: desc
+- kind: Student
+  ancestor: yes
+  properties:
+  - name: data
+    direction: desc
