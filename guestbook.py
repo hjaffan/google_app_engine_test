@@ -43,21 +43,17 @@ def people_key(people_name=DEFAULT_NAME):
 def class_key(class_name=DEFAULT_NAME):
     return ndb.Key('People', class_name)
 
-# class People(ndb.Model):
-#     name = ndb.TextProperty(indexed=True)
-#     role = ndb.StringProperty()
-#     phone_number = ndb.StringProperty(indexed=False)
-#     date = ndb.DateTimeProperty(auto_now_add=True)
-#
-# class Classroom(ndb.Model):
-#     name = ndb.StringProperty()
-#     students = ndb.KeyProperty(kind=People, repeated=True)
-#     instructor = ndb.StringProperty(indexed=False)
-
 class People(webapp2.RequestHandler):
 
-
+    # We need to be able to grab all Students in a Class room.
+    # Also we need to be able to get
     def get(self):
+        name = self.request.get('name',"")
+        if name != None:
+            s_id = Student().get_student_id(name_to_search=name)
+            classes = ClassRoom().get_students_in_class_by_name(id_to_search=s_id)
+            print "I AM HERE "
+            print classes
         people = {}
         people['students'] = Student.query().fetch(10)
         people['instructors'] = Instructor.query().fetch(10)
@@ -106,14 +102,36 @@ class People(webapp2.RequestHandler):
         class_room.put()
         self.redirect('/people')
 
+    def put(self):
+        self.redirect('/people')
+
+    def delete(self):
+        name = self.requeset.get('name')
+        instructor = Instructor.get_instructor_by_name(name_to_search=name)
+        student = Student().get_student_by_name(name_to_search=name)
+        conf = ""
+        if student == None || instructor == None :
+            print("No Object was found. No action taken")
+            conf = "No Object was found. No action taken"
+        elif student != None:
+            print("A Student object was found")
+            conf = Student().delete_student(student)
+        elif instructor != None:
+            print("An Instructor object was found")
+            conf = Instructor().delete_instructor(instructor)
+        self.response.write(conf)
+
 # This class is used to Get a List of all the class Rooms out there.
 #
 class ClassRooms(webapp2.RequestHandler):
 
     def get(self):
-
+        classroom =  self.request.get('class',"")
         self.response.write([p.to_dict() for p in ClassRoom.query().fetch(10)])
 
+    def post(self):
+
+        self.response.write()
 
 # [START app]
 app = webapp2.WSGIApplication([
