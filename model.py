@@ -18,8 +18,8 @@ class Student(ndb.Model):
             return student.id
 
     def delete_student(self, id):
-       conf = ndb.Key('category', int(id)).delete()
-       return conf
+        conf = id.key.delete()
+        return conf
 
 
 class Instructor(ndb.Model):
@@ -35,7 +35,8 @@ class Instructor(ndb.Model):
         return self.id
 
     def delete_instructor(self, id):
-       conf = ndb.Key('category', int(id)).delete()
+       conf = ndb.Key('category', int(id.key.id())).delete()
+
        return conf
 
 

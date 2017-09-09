@@ -49,15 +49,16 @@ class People(webapp2.RequestHandler):
     # Also we need to be able to get
     def get(self):
         name = self.request.get('name',"")
-        if name != None:
+        if name != "":
             s_id = Student().get_student_id(name_to_search=name)
             classes = ClassRoom().get_students_in_class_by_name(id_to_search=s_id)
             print "I AM HERE "
-            print classes
-        people = {}
-        people['students'] = Student.query().fetch(10)
-        people['instructors'] = Instructor.query().fetch(10)
-        self.response.write([people])
+            print s_id
+        else:
+            people = {}
+            people['students'] = Student.query().fetch(10)
+            people['instructors'] = Instructor.query().fetch(10)
+            self.response.write([people])
 
 
     def post(self):
@@ -103,22 +104,24 @@ class People(webapp2.RequestHandler):
         self.redirect('/people')
 
     def put(self):
+
         self.redirect('/people')
 
     def delete(self):
-        name = self.requeset.get('name')
-        instructor = Instructor.get_instructor_by_name(name_to_search=name)
+        name = self.request.get('name', "")
+        instructor = Instructor().get_instructor_by_name(name_to_search=name)
         student = Student().get_student_by_name(name_to_search=name)
         conf = ""
-        if student == None || instructor == None :
+        print student
+        if student == None and instructor == None :
             print("No Object was found. No action taken")
             conf = "No Object was found. No action taken"
         elif student != None:
-            print("A Student object was found")
+            print("A Student object was found ")
             conf = Student().delete_student(student)
         elif instructor != None:
-            print("An Instructor object was found")
-            conf = Instructor().delete_instructor(instructor)
+            print("An Instructor object was found: " + instructor.key)
+            conf = Instructor().delete_instructor(instructor.key)
         self.response.write(conf)
 
 # This class is used to Get a List of all the class Rooms out there.
